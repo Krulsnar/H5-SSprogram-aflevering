@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace H5_SSP_aflevering.Models
 {
-    public partial class TodoModel
+    public partial class Todo
     {
         public int Id { get; set; }
         public string UserId { get; set; }

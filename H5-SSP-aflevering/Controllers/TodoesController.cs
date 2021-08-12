@@ -24,7 +24,7 @@ namespace H5_SSP_aflevering.Controllers
         {
             string userName = User.Identity.Name;
 
-            List<TodoModel> ts = new List<TodoModel>() { new TodoModel { Id = 1, Note = "Hej", Title = "test", UserId = userName } };
+            List<Todo> ts = new List<Todo>() { new Todo { Id = 1, Note = "Hej", Title = "test", UserId = userName } };
             //ts.Add(Id = 1, Note = "Hej", Title = "test", UserId = userName);
 
             return View(ts);
@@ -60,7 +60,7 @@ namespace H5_SSP_aflevering.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,UserId,Title,Note")] TodoModel todo)
+        public async Task<IActionResult> Create([Bind("Id,UserId,Title,Note")] Todo todo)
         {
             if (ModelState.IsValid)
             {
@@ -92,7 +92,7 @@ namespace H5_SSP_aflevering.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,UserId,Title,Note")] TodoModel todo)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,UserId,Title,Note")] Todo todo)
         {
             if (id != todo.Id)
             {

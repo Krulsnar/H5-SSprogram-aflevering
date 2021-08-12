@@ -18,7 +18,7 @@ namespace H5_SSP_aflevering.Models
         {
         }
 
-        public virtual DbSet<TodoModel> Todos { get; set; }
+        public virtual DbSet<Todo> Todos { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -33,7 +33,7 @@ namespace H5_SSP_aflevering.Models
         {
             modelBuilder.HasAnnotation("Relational:Collation", "SQL_Latin1_General_CP1_CI_AS");
 
-            modelBuilder.Entity<TodoModel>(entity =>
+            modelBuilder.Entity<Todo>(entity =>
             {
                 entity.ToTable("Todo");
 
