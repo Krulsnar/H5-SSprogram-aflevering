@@ -1,5 +1,6 @@
 using H5_SSP_aflevering.Code;
 using H5_SSP_aflevering.Data;
+using H5_SSP_aflevering.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -32,6 +33,9 @@ namespace H5_SSP_aflevering
                 options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDatabaseDeveloperPageExceptionFilter();
+
+            var connection = Configuration.GetConnectionString("H5_SSP_TODO");
+            services.AddDbContext<H5_SSP_TODOContext>(options => options.UseSqlServer(connection));
 
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
