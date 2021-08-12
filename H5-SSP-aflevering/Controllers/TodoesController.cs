@@ -76,6 +76,9 @@ namespace H5_SSP_aflevering.Controllers
         {
             if (ModelState.IsValid)
             {
+                todo.UserId = User.Identity.Name;
+                todo.Note = _encryption.Encrypt(todo.Note, _dataProtector);
+                
                 _context.Add(todo);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
