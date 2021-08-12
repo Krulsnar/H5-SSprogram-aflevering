@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using H5_SSP_aflevering.Models;
+using H5_SSP_aflevering.Code;
+using Microsoft.AspNetCore.DataProtection;
 
 namespace H5_SSP_aflevering.Controllers
 {
@@ -13,10 +15,20 @@ namespace H5_SSP_aflevering.Controllers
     {
         private readonly H5_SSP_TODOContext _context;
         private readonly Data.ApplicationDbContext _applicationDbContext;
-        public TodoesController(H5_SSP_TODOContext context, Data.ApplicationDbContext applicationDbContext)
+        private readonly IDataProtector _dataProtector;
+        private readonly Encryption _encryption;
+
+        public TodoesController(
+            H5_SSP_TODOContext context, 
+            Data.ApplicationDbContext applicationDbContext,
+            IDataProtectionProvider dataProtector,
+            Encryption encryption
+            )
         {
             _applicationDbContext = applicationDbContext;
             _context = context;
+            _dataProtector = dataProtector.CreateProtector("testKey");
+            _encryption = encryption;
         }
 
         // GET: Todoes
