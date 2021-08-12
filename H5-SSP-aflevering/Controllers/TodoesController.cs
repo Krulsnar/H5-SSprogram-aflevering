@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using H5_SSP_aflevering.Models;
+using H5_SSP_aflevering.Code;
+using Microsoft.AspNetCore.DataProtection;
 
 namespace H5_SSP_aflevering.Controllers
 {
@@ -13,22 +15,35 @@ namespace H5_SSP_aflevering.Controllers
     {
         private readonly H5_SSP_TODOContext _context;
         private readonly Data.ApplicationDbContext _applicationDbContext;
-        public TodoesController(H5_SSP_TODOContext context, Data.ApplicationDbContext applicationDbContext)
+        private readonly IDataProtector _dataProtector;
+        private readonly Encryption _encryption;
+
+        public TodoesController(
+            H5_SSP_TODOContext context, 
+            Data.ApplicationDbContext applicationDbContext,
+            IDataProtectionProvider dataProtector,
+            Encryption encryption
+            )
         {
             _applicationDbContext = applicationDbContext;
             _context = context;
+            _dataProtector = dataProtector.CreateProtector("testKey");
+            _encryption = encryption;
         }
 
         // GET: Todoes
         public async Task<IActionResult> Index()
         {
-            string userName = User.Identity.Name;
+            var userName = User.Identity.Name;
 
-            List<Todo> ts = new List<Todo>() { new Todo { Id = 1, Note = "Hej", Title = "test", UserId = userName } };
-            //ts.Add(Id = 1, Note = "Hej", Title = "test", UserId = userName);
+            var todolist = await _context.Todos.Where(user => user.UserId == userName).ToListAsync();
 
-            return View(ts);
-            //return View(await _context.Todos.ToListAsync());
+            foreach (var todo in todolist)
+            {
+                todo.Note = _encryption.Decrypt(todo.Note, _dataProtector);
+            }
+
+            return View(todolist);
         }
 
         // GET: Todoes/Details/5
@@ -45,6 +60,7 @@ namespace H5_SSP_aflevering.Controllers
             {
                 return NotFound();
             }
+            todo.Note = _encryption.Decrypt(todo.Note, _dataProtector);
 
             return View(todo);
         }
@@ -64,6 +80,9 @@ namespace H5_SSP_aflevering.Controllers
         {
             if (ModelState.IsValid)
             {
+                todo.UserId = User.Identity.Name;
+                todo.Note = _encryption.Encrypt(todo.Note, _dataProtector);
+                
                 _context.Add(todo);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -80,10 +99,12 @@ namespace H5_SSP_aflevering.Controllers
             }
 
             var todo = await _context.Todos.FindAsync(id);
+            
             if (todo == null)
             {
                 return NotFound();
             }
+            todo.Note = _encryption.Decrypt(todo.Note, _dataProtector);
             return View(todo);
         }
 
@@ -103,6 +124,8 @@ namespace H5_SSP_aflevering.Controllers
             {
                 try
                 {
+                    todo.UserId = User.Identity.Name;
+                    todo.Note = _encryption.Encrypt(todo.Note, _dataProtector);
                     _context.Update(todo);
                     await _context.SaveChangesAsync();
                 }
