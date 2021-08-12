@@ -1,6 +1,7 @@
 using H5_SSP_aflevering.Code;
 using H5_SSP_aflevering.Data;
 using H5_SSP_aflevering.Models;
+using H5ServersideProgrammering.Codes;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -43,7 +44,7 @@ namespace H5_SSP_aflevering
 
             services.AddDataProtection();
 
-            //services.AddTransient<>
+            services.AddTransient<Hashing>();
             services.AddTransient<Encryption>();
         }
 

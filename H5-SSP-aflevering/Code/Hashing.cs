@@ -18,7 +18,7 @@ namespace H5ServersideProgrammering.Codes
             return hashedValueAsString;
         }
 
-        public string GetHashedText_bcrypt(string valueToHash)
+        public string GetHashedText_BCrypt(string valueToHash)
         {
             string hashedValueAsString = BCrypt.Net.BCrypt.HashPassword(valueToHash);
             
