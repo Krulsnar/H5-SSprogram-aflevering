@@ -1,3 +1,4 @@
+using H5_SSP_aflevering.Code;
 using H5_SSP_aflevering.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -35,6 +36,10 @@ namespace H5_SSP_aflevering
             services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddControllersWithViews();
+
+            services.AddDataProtection();
+
+            services.AddTransient<Encryption>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
