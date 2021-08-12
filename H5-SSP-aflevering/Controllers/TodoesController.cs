@@ -34,13 +34,16 @@ namespace H5_SSP_aflevering.Controllers
         // GET: Todoes
         public async Task<IActionResult> Index()
         {
-            string userName = User.Identity.Name;
+            var userName = User.Identity.Name;
 
-            List<Todo> ts = new List<Todo>() { new Todo { Id = 1, Note = "Hej", Title = "test", UserId = userName } };
-            //ts.Add(Id = 1, Note = "Hej", Title = "test", UserId = userName);
+            var todolist = await _context.Todos.Where(user => user.UserId == userName).ToListAsync();
 
-            return View(ts);
-            //return View(await _context.Todos.ToListAsync());
+            foreach (var todo in todolist)
+            {
+                todo.Note = _encryption.Decrypt(todo.Note, _dataProtector);
+            }
+
+            return View(todolist);
         }
 
         // GET: Todoes/Details/5
@@ -57,6 +60,7 @@ namespace H5_SSP_aflevering.Controllers
             {
                 return NotFound();
             }
+            todo.Note = _encryption.Decrypt(todo.Note, _dataProtector);
 
             return View(todo);
         }
@@ -95,10 +99,12 @@ namespace H5_SSP_aflevering.Controllers
             }
 
             var todo = await _context.Todos.FindAsync(id);
+            
             if (todo == null)
             {
                 return NotFound();
             }
+            todo.Note = _encryption.Decrypt(todo.Note, _dataProtector);
             return View(todo);
         }
 
@@ -118,6 +124,8 @@ namespace H5_SSP_aflevering.Controllers
             {
                 try
                 {
+                    todo.UserId = User.Identity.Name;
+                    todo.Note = _encryption.Encrypt(todo.Note, _dataProtector);
                     _context.Update(todo);
                     await _context.SaveChangesAsync();
                 }
