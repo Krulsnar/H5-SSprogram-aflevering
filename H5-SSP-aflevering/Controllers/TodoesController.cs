@@ -12,16 +12,23 @@ namespace H5_SSP_aflevering.Controllers
     public class TodoesController : Controller
     {
         private readonly H5_SSP_TODOContext _context;
-
-        public TodoesController(H5_SSP_TODOContext context)
+        private readonly Data.ApplicationDbContext _applicationDbContext;
+        public TodoesController(H5_SSP_TODOContext context, Data.ApplicationDbContext applicationDbContext)
         {
+            _applicationDbContext = applicationDbContext;
             _context = context;
         }
 
         // GET: Todoes
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Todos.ToListAsync());
+            string userName = User.Identity.Name;
+
+            List<TodoModel> ts = new List<TodoModel>() { new TodoModel { Id = 1, Note = "Hej", Title = "test", UserId = userName } };
+            //ts.Add(Id = 1, Note = "Hej", Title = "test", UserId = userName);
+
+            return View(ts);
+            //return View(await _context.Todos.ToListAsync());
         }
 
         // GET: Todoes/Details/5
@@ -53,7 +60,7 @@ namespace H5_SSP_aflevering.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,UserId,Title,Note")] Todo todo)
+        public async Task<IActionResult> Create([Bind("Id,UserId,Title,Note")] TodoModel todo)
         {
             if (ModelState.IsValid)
             {
@@ -85,7 +92,7 @@ namespace H5_SSP_aflevering.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,UserId,Title,Note")] Todo todo)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,UserId,Title,Note")] TodoModel todo)
         {
             if (id != todo.Id)
             {

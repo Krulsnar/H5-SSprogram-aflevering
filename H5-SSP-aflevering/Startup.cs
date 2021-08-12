@@ -43,6 +43,7 @@ namespace H5_SSP_aflevering
 
             services.AddDataProtection();
 
+            //services.AddTransient<>
             services.AddTransient<Encryption>();
         }
 
