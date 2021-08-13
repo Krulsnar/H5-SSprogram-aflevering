@@ -9,6 +9,7 @@ using H5_SSP_aflevering.Models;
 using H5_SSP_aflevering.Code;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Authorization;
+using H5_SSP_aflevering.Areas.Identity.Code;
 
 namespace H5_SSP_aflevering.Controllers
 {
@@ -37,12 +38,25 @@ namespace H5_SSP_aflevering.Controllers
         public async Task<IActionResult> Index()
         {
             var userName = User.Identity.Name;
+            List<Todo> todolist;
 
-            var todolist = await _context.Todos.Where(user => user.UserId == userName).ToListAsync();
-
-            foreach (var todo in todolist)
+            if (User.IsInRole("Admin"))
             {
-                todo.Note = _encryption.Decrypt(todo.Note, _dataProtector);
+                todolist = await _context.Todos.OrderBy(x => x.UserId).ToListAsync();
+
+                foreach (var todo in todolist)
+                {
+                    todo.Note = _encryption.Decrypt(todo.Note, _dataProtector);
+                }
+            }
+            else
+            {
+                todolist = await _context.Todos.Where(user => user.UserId == userName).ToListAsync();
+
+                foreach (var todo in todolist)
+                {
+                    todo.Note = _encryption.Decrypt(todo.Note, _dataProtector);
+                }
             }
 
             return View(todolist);
@@ -62,6 +76,7 @@ namespace H5_SSP_aflevering.Controllers
             {
                 return NotFound();
             }
+            ViewData["noteEncrypted"] = todo.Note;
             todo.Note = _encryption.Decrypt(todo.Note, _dataProtector);
 
             return View(todo);
@@ -158,6 +173,7 @@ namespace H5_SSP_aflevering.Controllers
 
             var todo = await _context.Todos
                 .FirstOrDefaultAsync(m => m.Id == id);
+            todo.Note = _encryption.Decrypt(todo.Note, _dataProtector);
             if (todo == null)
             {
                 return NotFound();
@@ -167,6 +183,7 @@ namespace H5_SSP_aflevering.Controllers
         }
 
         // POST: Todoes/Delete/5
+        [Authorize(Roles = "Admin")]
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)

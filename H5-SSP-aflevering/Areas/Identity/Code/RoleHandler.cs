@@ -39,6 +39,18 @@ namespace H5_SSP_aflevering.Areas.Identity.Code
             }
         }
 
+        public async Task<bool> CheckRole(string user, string role, IServiceProvider _serviceProvider)
+        {
+            bool CheckRole = false;
+            var UserManager = _serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            var userRoleExist = await UserManager.GetRolesAsync(await GetIdentityUser(user, _serviceProvider));
+
+            if (userRoleExist.Contains(role))
+                CheckRole = true;
+
+            return CheckRole;
+        }
+
         private async Task<IdentityUser> GetIdentityUser(string user, IServiceProvider _serviceProvider)
         {
             var UserManager = _serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
