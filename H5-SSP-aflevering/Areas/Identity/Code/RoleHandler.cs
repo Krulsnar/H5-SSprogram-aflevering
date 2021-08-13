@@ -25,18 +25,26 @@ namespace H5_SSP_aflevering.Areas.Identity.Code
         {
             var UserManager = _serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
             var RoleManager = _serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            
-            var roleExist = await RoleManager.RoleExistsAsync(role);
 
-            if (roleExist)
+            var roleExist = await RoleManager.RoleExistsAsync(role);
+            var userRoleExist = await UserManager.GetRolesAsync(await GetIdentityUser(user, _serviceProvider));
+
+            if (roleExist && !userRoleExist.Contains(role))
             {
-                IdentityUser identityUser = await UserManager.FindByEmailAsync(user);
-                await UserManager.AddToRoleAsync(identityUser, role);
+                await UserManager.AddToRoleAsync(await GetIdentityUser(user, _serviceProvider), role);
             }
             else
             {
                 //Error message
             }
+        }
+
+        private async Task<IdentityUser> GetIdentityUser(string user, IServiceProvider _serviceProvider)
+        {
+            var UserManager = _serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+            IdentityUser identityUser = await UserManager.FindByEmailAsync(user);
+
+            return identityUser;
         }
     }
 }

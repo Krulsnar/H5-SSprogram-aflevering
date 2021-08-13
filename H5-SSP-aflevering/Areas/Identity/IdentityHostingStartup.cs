@@ -14,10 +14,12 @@ namespace H5_SSP_aflevering.Areas.Identity
     {
         public void Configure(IWebHostBuilder builder)
         {
-            builder.ConfigureServices((context, services) => {
+            builder.ConfigureServices((context, services) =>
+            {
                 services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    context.Configuration.GetConnectionString("DefaultConnection")));
+                    options.UseSqlServer(
+                        context.Configuration.GetConnectionString("DefaultConnection")));
+                services.AddDatabaseDeveloperPageExceptionFilter();
 
                 services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
                     .AddRoles<IdentityRole>()
