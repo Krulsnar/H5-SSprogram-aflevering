@@ -1,4 +1,5 @@
-﻿using H5_SSP_aflevering.Code;
+﻿using H5_SSP_aflevering.Areas.Identity.Code;
+using H5_SSP_aflevering.Code;
 using H5_SSP_aflevering.Models;
 using H5ServersideProgrammering.Codes;
 using Microsoft.AspNetCore.DataProtection;
@@ -18,25 +19,34 @@ namespace H5_SSP_aflevering.Controllers
         private readonly IDataProtector _dataProtector;
         private readonly Encryption _encryption;
         private readonly Hashing _hashing;
+        private readonly RoleHandler _roleHandler;
+        private readonly IServiceProvider _serviceProvider;
 
         public HomeController(
             ILogger<HomeController> logger,
             IDataProtectionProvider dataProtector,
             Encryption encryption,
-            Hashing hashing
+            Hashing hashing,
+            RoleHandler roleHandler,
+            IServiceProvider serviceProvider
             )
         {
             _logger = logger;
             _dataProtector = dataProtector.CreateProtector("testKey");
             _encryption = encryption;
             _hashing = hashing;
+            _roleHandler = roleHandler;
+            _serviceProvider = serviceProvider;
         }
 
-        public IActionResult Index(string input)
+        public async Task<IActionResult> Index(string input)
         {
             string txt = "Hello Andreas og Linette";
             string encryptedInput = _encryption.Encrypt(txt, _dataProtector);
             string decryptedInput = _encryption.Decrypt(encryptedInput, _dataProtector);
+
+            await _roleHandler.CreateRole("Admin", _serviceProvider);
+            await _roleHandler.SetRole("andreas@moinichen.com", "Admin", _serviceProvider);
 
             IndexModel inputModel = new IndexModel()
             {

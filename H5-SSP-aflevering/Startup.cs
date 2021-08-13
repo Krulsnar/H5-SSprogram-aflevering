@@ -1,3 +1,4 @@
+using H5_SSP_aflevering.Areas.Identity.Code;
 using H5_SSP_aflevering.Code;
 using H5_SSP_aflevering.Data;
 using H5_SSP_aflevering.Models;
@@ -30,22 +31,14 @@ namespace H5_SSP_aflevering
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
-            services.AddDatabaseDeveloperPageExceptionFilter();
-
             var connection = Configuration.GetConnectionString("H5_SSP_TODO");
             services.AddDbContext<H5_SSP_TODOContext>(options => options.UseSqlServer(connection));
-
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
-            services.AddControllersWithViews();
 
             services.AddDataProtection();
 
             services.AddTransient<Hashing>();
             services.AddTransient<Encryption>();
+            services.AddTransient<RoleHandler>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

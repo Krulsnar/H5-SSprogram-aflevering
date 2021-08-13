@@ -8,9 +8,11 @@ using Microsoft.EntityFrameworkCore;
 using H5_SSP_aflevering.Models;
 using H5_SSP_aflevering.Code;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Authorization;
 
 namespace H5_SSP_aflevering.Controllers
 {
+    [Authorize("RequireAuthenticatedUser")]
     public class TodoesController : Controller
     {
         private readonly H5_SSP_TODOContext _context;
@@ -146,6 +148,7 @@ namespace H5_SSP_aflevering.Controllers
         }
 
         // GET: Todoes/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
